@@ -7,6 +7,9 @@ Features:
 - Delete repo
 
 ## Run
+1. Create a [personal API token](https://github.com/blog/1509-personal-api-tokens)
+
+2. Pull docker image and run command
 ```
 docker run --rm -e GITHUB_API_KEY=xxxxxxxxx dhoeric/github-cmd info dhoeric hello-world
 docker run --rm -e GITHUB_API_KEY=xxxxxxxxx dhoeric/github-cmd create dhoeric hello-world
