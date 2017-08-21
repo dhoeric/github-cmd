@@ -86,6 +86,46 @@ func main() {
 			fmt.Printf("Repositories.Create() returned error: %v", err)
 			os.Exit(1)
 		}
+	} else if cmd == "user-list-repo" {
+		fmt.Printf("Here is user-list-repo\n")
+		user := os.Args[2]
+
+		repos, _, err := client.Repositories.List(context, user, &github.RepositoryListOptions{})
+		if err != nil {
+			fmt.Printf("Repositories.List() return error: %v", err)
+			os.Exit(1)
+		}
+
+		for _, repo := range repos {
+			pack := &RepoInfo{
+				FullName: *repo.FullName,
+				ForksCount: *repo.ForksCount,
+				StarsCount: *repo.StargazersCount,
+			}
+
+			fmt.Printf("%+v\n", pack)
+		}
+
+	} else if cmd == "org-list-repo" {
+		fmt.Printf("Here is org-list-repo\n")
+		user := os.Args[2]
+
+		repos, _, err := client.Repositories.ListByOrg(context, user, &github.RepositoryListByOrgOptions{})
+		if err != nil {
+			fmt.Printf("Repositories.ListByOrg() return error: %v", err)
+			os.Exit(1)
+		}
+
+		for _, repo := range repos {
+			pack := &RepoInfo{
+				FullName: *repo.FullName,
+				ForksCount: *repo.ForksCount,
+				StarsCount: *repo.StargazersCount,
+			}
+
+			fmt.Printf("%+v\n", pack)
+		}
+
 
 	} else {
 		fmt.Printf("No such command: %s\n", cmd)
