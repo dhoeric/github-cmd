@@ -90,13 +90,25 @@ func main() {
 		fmt.Printf("Here is user-list-repo\n")
 		user := os.Args[2]
 
-		repos, _, err := client.Repositories.List(context, user, &github.RepositoryListOptions{})
-		if err != nil {
-			fmt.Printf("Repositories.List() return error: %v", err)
-			os.Exit(1)
+		opt := &github.RepositoryListOptions{
+			ListOptions: github.ListOptions{PerPage: 10},
+		}
+		// get all pages of results
+		var allRepos []*github.Repository
+		for {
+			repos, resp, err := client.Repositories.List(context, user, opt)
+			if err != nil {
+				fmt.Printf("Repositories.List() return error: %v", err)
+				os.Exit(1)
+			}
+			allRepos = append(allRepos, repos...)
+			if resp.NextPage == 0 {
+				break
+			}
+			opt.Page = resp.NextPage
 		}
 
-		for _, repo := range repos {
+		for _, repo := range allRepos {
 			pack := &RepoInfo{
 				FullName: *repo.FullName,
 				ForksCount: *repo.ForksCount,
@@ -110,13 +122,25 @@ func main() {
 		fmt.Printf("Here is org-list-repo\n")
 		user := os.Args[2]
 
-		repos, _, err := client.Repositories.ListByOrg(context, user, &github.RepositoryListByOrgOptions{})
-		if err != nil {
-			fmt.Printf("Repositories.ListByOrg() return error: %v", err)
-			os.Exit(1)
+		opt := &github.RepositoryListByOrgOptions{
+			ListOptions: github.ListOptions{PerPage: 10},
+		}
+		// get all pages of results
+		var allRepos []*github.Repository
+		for {
+			repos, resp, err := client.Repositories.ListByOrg(context, user, opt)
+			if err != nil {
+				fmt.Printf("Repositories.ListByOrg() return error: %v", err)
+				os.Exit(1)
+			}
+			allRepos = append(allRepos, repos...)
+			if resp.NextPage == 0 {
+				break
+			}
+			opt.Page = resp.NextPage
 		}
 
-		for _, repo := range repos {
+		for _, repo := range allRepos {
 			pack := &RepoInfo{
 				FullName: *repo.FullName,
 				ForksCount: *repo.ForksCount,
@@ -125,8 +149,6 @@ func main() {
 
 			fmt.Printf("%+v\n", pack)
 		}
-
-
 	} else {
 		fmt.Printf("No such command: %s\n", cmd)
 		os.Exit(1)
